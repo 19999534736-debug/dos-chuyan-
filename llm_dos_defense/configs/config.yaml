@@ -1,0 +1,114 @@
+# 主配置文件
+
+# 数据配置
+data:
+  raw_data_path: "data/raw"
+  processed_data_path: "data/processed"
+  train_ratio: 0.7
+  val_ratio: 0.15
+  test_ratio: 0.15
+  random_seed: 42
+  
+  # 数据生成配置
+  normal_samples: 5000
+  malicious_samples: 5000
+  
+  # 特殊参数
+  max_input_length: 2048
+  min_input_length: 10
+
+# 特征提取配置
+features:
+  # 启用的特征
+  use_statistical_features: true
+  use_semantic_features: true
+  use_pattern_features: true
+  
+  # 具体特征
+  statistical:
+    - "input_length"
+    - "input_entropy"
+    - "unique_token_ratio"
+    - "special_char_ratio"
+    - "avg_word_length"
+    
+  pattern:
+    - "repetition_ratio"
+    - "unusual_token_ratio"
+    - "punctuation_density"
+    - "unmatched_bracket_ratio"
+    
+  semantic:
+    - "sentence_embedding"
+    - "semantic_diversity"
+    - "coherence_score"
+
+# 模型配置
+model:
+  # 轻量级分类器
+  detector_type: "ensemble"  # 可选: "random_forest", "svm", "xgboost", "ensemble"
+  
+  # 随机森林
+  random_forest:
+    n_estimators: 100
+    max_depth: 10
+    min_samples_split: 5
+    n_jobs: -1
+    
+  # SVM
+  svm:
+    kernel: "rbf"
+    C: 1.0
+    gamma: "scale"
+    
+  # 集成学习
+  ensemble:
+    models:
+      - "random_forest"
+      - "gradient_boosting"
+      - "svm"
+    voting: "soft"
+    
+  # 超参数
+  test_size: 0.2
+  random_state: 42
+  
+# 训练配置
+training:
+  batch_size: 32
+  num_epochs: 50
+  learning_rate: 0.001
+  validation_split: 0.2
+  early_stopping_patience: 10
+  model_save_path: "models/detector_model.pkl"
+  
+# 评估配置
+evaluation:
+  metrics:
+    - "accuracy"
+    - "precision"
+    - "recall"
+    - "f1_score"
+    - "roc_auc"
+  
+  # 阈值设置
+  detection_threshold: 0.5
+  high_confidence_threshold: 0.8
+  
+# 日志配置
+logging:
+  level: "INFO"
+  log_file: "logs/training.log"
+  
+# 服务配置
+service:
+  # 实时检测延迟目标 (ms)
+  max_latency_ms: 100
+  
+  # 缓存配置
+  enable_cache: true
+  cache_size: 10000
+  
+  # 批量处理
+  enable_batch_processing: false
+  batch_timeout_ms: 500
