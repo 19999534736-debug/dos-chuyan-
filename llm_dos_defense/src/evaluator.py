@@ -107,8 +107,10 @@ class Evaluator:
             if output_path:
                 plt.savefig(output_path, dpi=300, bbox_inches='tight')
                 logger.info(f"ROC curve saved to {output_path}")
-            
-            plt.show()
+                plt.close()
+            else:
+                plt.show()
+                plt.close()
         except Exception as e:
             logger.warning(f"Failed to plot ROC curve: {e}")
     
@@ -132,8 +134,10 @@ class Evaluator:
             if output_path:
                 plt.savefig(output_path, dpi=300, bbox_inches='tight')
                 logger.info(f"PR curve saved to {output_path}")
-            
-            plt.show()
+                plt.close()
+            else:
+                plt.show()
+                plt.close()
         except Exception as e:
             logger.warning(f"Failed to plot PR curve: {e}")
     
@@ -156,8 +160,10 @@ class Evaluator:
             if output_path:
                 plt.savefig(output_path, dpi=300, bbox_inches='tight')
                 logger.info(f"Confusion matrix saved to {output_path}")
-            
-            plt.show()
+                plt.close()
+            else:
+                plt.show()
+                plt.close()
         except Exception as e:
             logger.warning(f"Failed to plot confusion matrix: {e}")
 

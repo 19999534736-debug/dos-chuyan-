@@ -213,8 +213,17 @@ class SimpleTrainingPipeline:
             json.dump(report, f, indent=2)
         
         self.logger.info(f"\nEvaluation report saved to {report_path}")
+
+        # 4. Save evaluation plots
+        roc_path = os.path.join(output_dir, "roc_curve.png")
+        pr_path = os.path.join(output_dir, "precision_recall_curve.png")
+        cm_path = os.path.join(output_dir, "confusion_matrix.png")
+
+        evaluator.plot_roc_curve(y_test, y_proba_test[:, 1], output_path=roc_path)
+        evaluator.plot_precision_recall_curve(y_test, y_proba_test[:, 1], output_path=pr_path)
+        evaluator.plot_confusion_matrix(y_test, y_pred_test, output_path=cm_path)
         
-        # 4. 特征重要性分析
+        # 5. 特征重要性分析
         if hasattr(model, 'models'):
             self.logger.info("\n" + "=" * 60)
             self.logger.info("Step 4: Feature importance (first model)")
