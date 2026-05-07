@@ -14,7 +14,7 @@ from typing import List, Dict, Any, Tuple, Optional
 import logging
 from collections import Counter
 import re
-from utils import setup_logger, calculate_entropy, calculate_repetition_ratio, calculate_unique_ratio
+from src.utils import setup_logger, calculate_entropy, calculate_repetition_ratio, calculate_unique_ratio
 
 logger = setup_logger(__name__)
 
@@ -363,7 +363,7 @@ class FeatureExtractor:
 
 
 if __name__ == "__main__":
-    from utils import load_config
+    from src.utils import load_config
     
     # 测试特征提取
     config = load_config("configs/config.yaml")

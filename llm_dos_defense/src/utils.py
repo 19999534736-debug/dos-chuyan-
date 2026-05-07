@@ -17,7 +17,11 @@ def setup_logger(name: str, log_file: Optional[str] = None, level: str = "INFO")
     """设置日志器"""
     logger = logging.getLogger(name)
     logger.setLevel(getattr(logging, level))
-    
+
+    # 避免重复添加处理器
+    if logger.handlers:
+        logger.handlers.clear()
+
     formatter = logging.Formatter(
         '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
     )

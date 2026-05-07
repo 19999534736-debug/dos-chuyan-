@@ -81,12 +81,12 @@
 ```
 llm_dos_defense/
 ├── data/                          # 数据文件夹
-│   ├── raw/                      # 原始数据
+│   ├── raw/                      # 原始数据（可选）
 │   ├── processed/                # 处理后的数据
 │   └── datasets.py               # 数据集管理
 ├── configs/                       # 配置文件
 │   ├── config.yaml               # 主配置
-│   └── model_config.yaml         # 模型配置
+│   └── model_config.yaml         # 模型配置辅助文件
 ├── src/                          # 源代码
 │   ├── __init__.py
 │   ├── data_preparation.py       # 数据准备
@@ -117,8 +117,7 @@ llm_dos_defense/
 ### 1. 环境设置
 
 ```bash
-git clone <repository>
-cd llm_dos_defense
+git clone <https://github.com/19999534736-debug/dos-chuyan->
 pip install -r requirements.txt
 ```
 
@@ -173,7 +172,6 @@ python src/evaluator.py --model models/detector_model.pkl
 
 - Dong, J., et al. (2025). "An Engorgio Prompt Makes Large Language Model Babble On." ICLR 2025.
 - Shumailov, I., et al. (2021). "Sponge Examples: Energy-Latency Attacks on Neural Networks."
-- [其他相关研究...]
 
 ## 许可证
 
@@ -181,5 +179,5 @@ MIT License
 
 ## 联系方式
 
-对于问题或建议，请联系：[您的邮箱]
+对于问题或建议，请联系：[19999534736@163.com]
 

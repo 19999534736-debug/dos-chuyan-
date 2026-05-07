@@ -3,7 +3,7 @@
 
 主要功能：
 1. 生成正常输入数据集
-2. 生成恶意输入数据集（基于Engorgio原理）
+2. 生成恶意输入数据集(基于Engorgio原理)
 3. 数据预处理和划分
 4. 数据集管理
 """
@@ -16,7 +16,7 @@ from typing import List, Tuple, Dict, Any
 from dataclasses import dataclass
 import logging
 from tqdm import tqdm
-from utils import setup_logger, save_pickle, load_pickle, calculate_repetition_ratio
+from src.utils import setup_logger, save_pickle, load_pickle, calculate_repetition_ratio
 
 logger = setup_logger(__name__)
 
@@ -425,7 +425,7 @@ class DatasetBuilder:
 
 
 if __name__ == "__main__":
-    from utils import load_config
+    from src.utils import load_config
     
     # 加载配置
     config = load_config("configs/config.yaml")

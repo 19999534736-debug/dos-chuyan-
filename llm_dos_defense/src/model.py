@@ -159,11 +159,13 @@ class EnsembleDetectionModel:
         self.scaler = None
         self.feature_names = None
         self.voting = config.get('voting', 'soft')
+        self.ensemble = None
         self._create_ensemble(config)
     
     def _create_ensemble(self, config: Dict[str, Any]):
         """创建集成模型"""
         model_configs = config.get('models', ['random_forest', 'gradient_boosting', 'svm'])
+        estimators = []
         
         for model_type in model_configs:
             if model_type == 'random_forest':
@@ -192,8 +194,10 @@ class EnsembleDetectionModel:
                 raise ValueError(f"Unknown model type: {model_type}")
             
             self.models.append((model_type, model))
+            estimators.append((model_type, model))
         
         self.scaler = StandardScaler()
+        self.ensemble = VotingClassifier(estimators=estimators, voting=self.voting, n_jobs=-1)
     
     def fit(self, X: pd.DataFrame, y: np.ndarray):
         """训练集成模型"""
@@ -202,50 +206,32 @@ class EnsembleDetectionModel:
         # 特征缩放
         X_scaled = self.scaler.fit_transform(X)
         
-        # 训练所有模型
-        logger.info(f"Training ensemble with {len(self.models)} models...")
-        for model_name, model in self.models:
-            logger.info(f"  Training {model_name}...")
-            model.fit(X_scaled, y)
+        # 训练集成模型
+        logger.info(f"Training ensemble voting classifier with {len(self.models)} base models...")
+        self.ensemble.fit(X_scaled, y)
     
     def predict(self, X: pd.DataFrame) -> np.ndarray:
         """预测"""
         X_scaled = self.scaler.transform(X)
-        
-        predictions = []
-        for model_name, model in self.models:
-            pred = model.predict(X_scaled)
-            predictions.append(pred)
-        
-        # 多数投票
-        predictions = np.array(predictions)
-        return (predictions.sum(axis=0) > len(self.models) // 2).astype(int)
+        return self.ensemble.predict(X_scaled)
     
     def predict_proba(self, X: pd.DataFrame) -> np.ndarray:
         """预测概率"""
         X_scaled = self.scaler.transform(X)
-        
-        probas = []
-        for model_name, model in self.models:
-            if hasattr(model, 'predict_proba'):
-                proba = model.predict_proba(X_scaled)
-            else:
-                # 处理没有predict_proba的模型
-                pred = model.predict(X_scaled)
-                proba = np.column_stack([1 - pred, pred])
-            probas.append(proba[:, 1])  # 取正类概率
-        
-        # 平均概率
-        avg_proba = np.mean(probas, axis=0)
-        return np.column_stack([1 - avg_proba, avg_proba])
+        if hasattr(self.ensemble, 'predict_proba'):
+            return self.ensemble.predict_proba(X_scaled)
+        else:
+            pred = self.ensemble.predict(X_scaled)
+            return np.column_stack([1 - pred, pred])
     
     def save(self, path: str):
         """保存模型"""
         model_data = {
-            'models': self.models,
+            'ensemble': self.ensemble,
             'scaler': self.scaler,
             'feature_names': self.feature_names,
             'voting': self.voting,
+            'models': self.models,
         }
         
         with open(path, 'wb') as f:
@@ -260,10 +246,15 @@ class EnsembleDetectionModel:
             model_data = pickle.load(f)
         
         instance = cls.__new__(cls)
-        instance.models = model_data['models']
+        instance.models = model_data.get('models', [])
         instance.scaler = model_data['scaler']
         instance.feature_names = model_data['feature_names']
         instance.voting = model_data.get('voting', 'soft')
+        instance.ensemble = model_data.get('ensemble', None)
+        instance.config = {
+            'models': [name for name, _ in instance.models],
+            'voting': instance.voting,
+        }
         
         logger.info(f"Ensemble model loaded from {path}")
         return instance
@@ -304,7 +295,7 @@ class LightweightDetectionModel:
         if not text:
             return False, 0.0
         
-        from utils import calculate_entropy, calculate_repetition_ratio
+        from src.utils import calculate_entropy, calculate_repetition_ratio
         
         score = 0.0
         
@@ -334,8 +325,8 @@ class LightweightDetectionModel:
 
 if __name__ == "__main__":
     # 测试模型
-    from feature_extraction import FeatureExtractor
-    from utils import load_config
+    from src.feature_extraction import FeatureExtractor
+    from src.utils import load_config
     import os
     
     config = load_config("configs/config.yaml")

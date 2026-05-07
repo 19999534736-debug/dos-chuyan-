@@ -38,8 +38,8 @@ class Trainer:
     
     def load_data(self, train_path: str, val_path: str = None, test_path: str = None) -> Tuple:
         """加载数据集"""
-        from feature_extraction import FeatureExtractor
-        from utils import load_config
+        from src.feature_extraction import FeatureExtractor
+        from src.utils import load_config
         
         logger.info("Loading datasets...")
         
@@ -75,7 +75,7 @@ class Trainer:
     
     def _prepare_features(self, df: pd.DataFrame) -> pd.DataFrame:
         """准备特征"""
-        from feature_extraction import FeatureExtractor
+        from src.feature_extraction import FeatureExtractor
         
         feature_extractor = FeatureExtractor(self.config)
         
@@ -105,7 +105,7 @@ class Trainer:
         model.fit(X_train, y_train)
         
         # 评估
-        from evaluator import Evaluator
+        from src.evaluator import Evaluator
         evaluator = Evaluator()
         
         # 训练集评估
@@ -145,8 +145,8 @@ class SimpleTrainingPipeline:
     def run(self, data_dir: str, output_dir: str = "outputs"):
         """运行完整的训练管道"""
         import os
-        from model import DetectionModel, EnsembleDetectionModel
-        from evaluator import Evaluator
+        from src.model import DetectionModel, EnsembleDetectionModel
+        from src.evaluator import Evaluator
         
         os.makedirs(output_dir, exist_ok=True)
         
@@ -239,7 +239,7 @@ class SimpleTrainingPipeline:
 
 
 if __name__ == "__main__":
-    from utils import load_config
+    from src.utils import load_config
     
     # 加载配置
     config = load_config("configs/config.yaml")
